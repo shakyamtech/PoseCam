@@ -7,7 +7,7 @@ import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/camera/presentation/screens/captured_preview_screen.dart';
-import '../../features/pose/presentation/screens/pose_screen_placeholder.dart';
+import '../../features/pose/presentation/screens/pose_screen.dart';
 import '../../features/editor/presentation/screens/editor_screen_placeholder.dart';
 import '../../features/profile/presentation/screens/profile_screen_placeholder.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -53,7 +53,7 @@ class AppRouter {
       GoRoute(
         name: RouteNames.pose,
         path: RouteNames.posePath,
-        builder: (context, state) => const PoseScreenPlaceholder(),
+        builder: (context, state) => const PoseScreen(),
       ),
       GoRoute(
         name: RouteNames.editor,
