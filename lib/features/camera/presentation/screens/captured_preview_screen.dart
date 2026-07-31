@@ -1,0 +1,210 @@
+import 'dart:io';
+import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_typography.dart';
+import '../../../../core/routes/route_names.dart';
+import '../../../../core/widgets/custom_button.dart';
+
+/// Screen displaying the captured image with actions: Retake, Continue to AI Pose, Edit, and Save.
+class CapturedPreviewScreen extends StatelessWidget {
+  final XFile? capturedFile;
+
+  const CapturedPreviewScreen({
+    super.key,
+    this.capturedFile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: AppColors.darkBackground,
+      appBar: AppBar(
+        title: const Text('Captured Photo'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_outlined),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sharing captured photo...')),
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Image Preview Container
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppColors.darkBorder, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: _buildImageWidget(),
+                ),
+              ),
+            ),
+
+            // Action Buttons Panel
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      // Retake Button
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.pop(),
+                          icon: const Icon(Icons.refresh_rounded, size: 20),
+                          label: const Text('Retake'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Continue to AI Pose (Placeholder)
+                      Expanded(
+                        child: CustomButton(
+                          text: 'AI Pose',
+                          icon: Icons.auto_awesome_rounded,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('AI Pose Overlay processing module placeholder.'),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      // Edit Photo (Placeholder)
+                      Expanded(
+                        child: CustomButton(
+                          text: 'Edit Photo',
+                          variant: ButtonVariant.secondary,
+                          icon: Icons.auto_fix_high_rounded,
+                          onPressed: () => context.pushNamed(RouteNames.editor),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Save Photo
+                      Expanded(
+                        child: CustomButton(
+                          text: 'Save Photo',
+                          icon: Icons.save_alt_rounded,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Photo saved successfully to PoseSnap Gallery!'),
+                              ),
+                            );
+                            context.goNamed(RouteNames.home);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageWidget() {
+    if (capturedFile != null) {
+      if (kIsWeb) {
+        return Image.network(
+          capturedFile!.path,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      }
+      return Image.file(
+        File(capturedFile!.path),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+
+    // Fallback Mock Preview Graphic
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withOpacity(0.6),
+            AppColors.secondary.withOpacity(0.3),
+            AppColors.darkSurfaceVariant,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.camera_alt_rounded,
+              size: 64,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'High Resolution Capture',
+              style: AppTypography.titleLarge.copyWith(
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'Captured Photo Preview',
+              style: AppTypography.labelSmall.copyWith(
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

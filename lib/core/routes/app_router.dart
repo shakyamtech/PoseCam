@@ -1,10 +1,12 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'route_names.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/camera/presentation/screens/camera_screen_placeholder.dart';
+import '../../features/camera/presentation/screens/camera_screen.dart';
+import '../../features/camera/presentation/screens/captured_preview_screen.dart';
 import '../../features/pose/presentation/screens/pose_screen_placeholder.dart';
 import '../../features/editor/presentation/screens/editor_screen_placeholder.dart';
 import '../../features/profile/presentation/screens/profile_screen_placeholder.dart';
@@ -38,7 +40,15 @@ class AppRouter {
       GoRoute(
         name: RouteNames.camera,
         path: RouteNames.cameraPath,
-        builder: (context, state) => const CameraScreenPlaceholder(),
+        builder: (context, state) => const CameraScreen(),
+      ),
+      GoRoute(
+        name: RouteNames.cameraPreview,
+        path: RouteNames.cameraPreviewPath,
+        builder: (context, state) {
+          final file = state.extra is XFile ? state.extra as XFile : null;
+          return CapturedPreviewScreen(capturedFile: file);
+        },
       ),
       GoRoute(
         name: RouteNames.pose,

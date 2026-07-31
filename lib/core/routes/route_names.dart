@@ -12,6 +12,9 @@ abstract class RouteNames {
   static const String camera = 'camera';
   static const String cameraPath = '/camera';
 
+  static const String cameraPreview = 'cameraPreview';
+  static const String cameraPreviewPath = '/camera/preview';
+
   static const String pose = 'pose';
   static const String posePath = '/pose';
 
