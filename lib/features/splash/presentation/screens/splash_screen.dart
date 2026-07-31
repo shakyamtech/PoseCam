@@ -80,8 +80,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.35),
-                      AppColors.secondary.withOpacity(0.0),
+                      AppColors.primary.withValues(alpha: 0.35),
+                      AppColors.secondary.withValues(alpha: 0.0),
                     ],
                   ),
                 ),
@@ -104,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             blurRadius: 24,
                             offset: const Offset(0, 10),
                           ),
@@ -164,7 +164,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 opacity: _fadeAnimation,
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 32,
                       height: 32,
                       child: CircularProgressIndicator(

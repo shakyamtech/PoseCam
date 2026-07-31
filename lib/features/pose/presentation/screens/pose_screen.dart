@@ -5,7 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../providers/camera_provider.dart';
 import '../../../../providers/pose_provider.dart';
-import '../../camera/presentation/widgets/camera_preview_widget.dart';
+import '../../../camera/presentation/widgets/camera_preview_widget.dart';
 import '../widgets/pose_overlay_painter.dart';
 
 /// Live AI Pose Detection Screen displaying 33 MediaPipe Body Landmarks & FPS metrics.
@@ -51,7 +51,7 @@ class PoseScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.85),
+                    Colors.black.withValues(alpha: 0.85),
                     Colors.transparent,
                   ],
                   begin: Alignment.topCenter,
@@ -148,7 +148,7 @@ class PoseScreen extends ConsumerWidget {
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.9),
+                    Colors.black.withValues(alpha: 0.9),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -165,7 +165,7 @@ class PoseScreen extends ConsumerWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: poseState.showSkeletonMesh
                             ? AppColors.primary
-                            : Colors.white.withOpacity(0.2),
+                            : Colors.white.withValues(alpha: 0.2),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
@@ -184,7 +184,7 @@ class PoseScreen extends ConsumerWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: poseState.showLandmarkLabels
                             ? AppColors.secondary
-                            : Colors.white.withOpacity(0.2),
+                            : Colors.white.withValues(alpha: 0.2),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
@@ -222,9 +222,9 @@ class PoseScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.6),
+        color: Colors.black.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.5), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

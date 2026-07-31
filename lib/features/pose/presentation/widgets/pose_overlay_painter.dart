@@ -36,7 +36,7 @@ class PoseOverlayPainter extends CustomPainter {
         ..style = PaintingStyle.stroke;
 
       final glowBonePaint = Paint()
-        ..color = AppColors.primary.withOpacity(0.4)
+        ..color = AppColors.primary.withValues(alpha: 0.4)
         ..strokeWidth = 7.0
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.stroke;
@@ -70,7 +70,7 @@ class PoseOverlayPainter extends CustomPainter {
           : (confidence > 0.7 ? AppColors.warning : AppColors.error);
 
       // Glowing aura
-      nodePaint.color = nodeColor.withOpacity(0.35);
+      nodePaint.color = nodeColor.withValues(alpha: 0.35);
       canvas.drawCircle(offset, 9.0, nodePaint);
 
       // Solid inner core
