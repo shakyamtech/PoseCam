@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../providers/camera_provider.dart';
 import '../../../../providers/ghost_overlay_provider.dart';
+import '../../../../providers/pose_matching_provider.dart';
 import '../../../pose_library/presentation/widgets/ghost_controls_widget.dart';
 import '../../../pose_library/presentation/widgets/ghost_overlay_painter.dart';
+import '../../../pose_matching/presentation/widgets/pose_match_hud_widget.dart';
 import '../../domain/models/camera_state.dart';
 import '../widgets/camera_bottom_bar.dart';
 import '../widgets/camera_permission_widget.dart';
@@ -12,7 +14,7 @@ import '../widgets/camera_preview_widget.dart';
 import '../widgets/camera_top_bar.dart';
 import '../widgets/camera_zoom_controls.dart';
 
-/// Primary Camera Viewfinder Screen for PoseSnap AI with Ghost Pose Overlay.
+/// Primary Camera Viewfinder Screen for PoseSnap AI with Ghost Pose Overlay & AI Pose Matching Engine.
 class CameraScreen extends ConsumerStatefulWidget {
   const CameraScreen({super.key});
 
@@ -57,6 +59,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
   Widget build(BuildContext context) {
     final cameraState = ref.watch(cameraProvider);
     final ghostState = ref.watch(ghostOverlayProvider);
+    final matchResult = ref.watch(poseMatchingProvider);
     final notifier = ref.read(cameraProvider.notifier);
 
     // Permission handling screens
@@ -82,7 +85,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
           // 1. Fullscreen Live Viewfinder
           const CameraPreviewWidget(),
 
-          // 2. Ghost Pose Overlay (Wrapped in RepaintBoundary for 60 FPS performance)
+          // 2. Ghost Pose Overlay with RED / GREEN Joint Highlighting
           if (ghostState.activePose != null && ghostState.isGhostVisible)
             RepaintBoundary(
               child: CustomPaint(
@@ -90,6 +93,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
                   activePose: ghostState.activePose,
                   opacity: ghostState.opacity,
                   positionOffset: ghostState.positionOffset,
+                  wrongJoints: matchResult.wrongJoints,
                 ),
                 child: const SizedBox.expand(),
               ),
@@ -103,14 +107,21 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
             child: CameraTopBar(),
           ),
 
-          // 4. Ghost Pose Controls HUD (Top Right)
+          // 4. AI Pose Match Score & Feedback HUD (Top Left)
+          const Positioned(
+            top: 0,
+            left: 0,
+            child: PoseMatchHudWidget(),
+          ),
+
+          // 5. Ghost Pose Controls HUD (Top Right)
           const Positioned(
             top: 0,
             right: 0,
             child: GhostControlsWidget(),
           ),
 
-          // 5. Floating Zoom Controls
+          // 6. Floating Zoom Controls
           const Positioned(
             bottom: 120,
             left: 0,
@@ -120,7 +131,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
             ),
           ),
 
-          // 6. Bottom Controls Shutter Bar
+          // 7. Bottom Controls Shutter Bar
           const Positioned(
             bottom: 0,
             left: 0,

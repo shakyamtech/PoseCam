@@ -3,16 +3,18 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../pose/domain/models/pose_model.dart';
 import '../../domain/models/pose_item_model.dart';
 
-/// High-performance CustomPainter rendering 40% purple neon ghost pose overlay centered on camera view.
+/// High-performance CustomPainter rendering 40% purple neon ghost pose overlay with RED / GREEN joint feedback.
 class GhostOverlayPainter extends CustomPainter {
   final PoseItemModel? activePose;
   final double opacity;
   final Offset positionOffset;
+  final Set<LandmarkType> wrongJoints;
 
   GhostOverlayPainter({
     required this.activePose,
     required this.opacity,
     required this.positionOffset,
+    this.wrongJoints = const {},
   });
 
   @override
@@ -53,24 +55,27 @@ class GhostOverlayPainter extends CustomPainter {
       }
     }
 
-    // 2. Ghost Joint Nodes
+    // 2. Ghost Joint Nodes (Dynamic RED / GREEN Feedback Highlighting)
     final nodePaint = Paint()
       ..color = Colors.white.withValues(alpha: opacity.clamp(0.0, 1.0))
       ..style = PaintingStyle.fill;
-
-    final outerRingPaint = Paint()
-      ..color = AppColors.primary.withValues(alpha: opacity.clamp(0.0, 1.0))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
 
     for (var lm in landmarks) {
       final offset = landmarkMap[lm.type];
       if (offset == null) continue;
 
+      final isWrong = wrongJoints.contains(lm.type);
+      final jointColor = isWrong ? AppColors.error : AppColors.success;
+
+      final outerRingPaint = Paint()
+        ..color = jointColor.withValues(alpha: opacity.clamp(0.0, 1.0))
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = isWrong ? 3.5 : 2.0;
+
       // Inner white node core
       canvas.drawCircle(offset, 4.5, nodePaint);
-      // Outer purple ring accent
-      canvas.drawCircle(offset, 7.0, outerRingPaint);
+      // Outer RED (incorrect) or GREEN (correct) ring accent
+      canvas.drawCircle(offset, isWrong ? 8.5 : 7.0, outerRingPaint);
     }
   }
 
@@ -78,6 +83,7 @@ class GhostOverlayPainter extends CustomPainter {
   bool shouldRepaint(covariant GhostOverlayPainter oldDelegate) {
     return oldDelegate.activePose != activePose ||
         oldDelegate.opacity != opacity ||
-        oldDelegate.positionOffset != positionOffset;
+        oldDelegate.positionOffset != positionOffset ||
+        oldDelegate.wrongJoints != wrongJoints;
   }
 }
