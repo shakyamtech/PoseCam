@@ -22,6 +22,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> with WidgetsBinding
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Initialize camera once when screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(cameraProvider.notifier).initCamera();
+    });
   }
 
   @override

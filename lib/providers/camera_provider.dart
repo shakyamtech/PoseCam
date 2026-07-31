@@ -8,10 +8,8 @@ final cameraServiceProvider = Provider<CameraService>((ref) {
   return CameraServiceImpl();
 });
 
-/// Camera State Notifier Provider
-final cameraProvider = StateNotifierProvider.autoDispose<CameraNotifier, CameraState>((ref) {
+/// Camera State Notifier Provider (Singleton per app lifecycle to avoid re-init loops)
+final cameraProvider = StateNotifierProvider<CameraNotifier, CameraState>((ref) {
   final service = ref.watch(cameraServiceProvider);
-  final notifier = CameraNotifier(service);
-  notifier.initCamera();
-  return notifier;
+  return CameraNotifier(service);
 });
