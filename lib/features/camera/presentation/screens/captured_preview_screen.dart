@@ -8,7 +8,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/routes/route_names.dart';
 import '../../../../core/widgets/custom_button.dart';
 
-/// Screen displaying the captured image with actions: Retake, Continue to AI Pose, Edit, and Save.
+/// Screen displaying the captured image with actions: Retake, AI Pose overlay, Edit Photo, and Save.
 class CapturedPreviewScreen extends StatelessWidget {
   final XFile? capturedFile;
 
@@ -93,18 +93,12 @@ class CapturedPreviewScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
 
-                      // Continue to AI Pose (Placeholder)
+                      // Continue to AI Pose Screen
                       Expanded(
                         child: CustomButton(
                           text: 'AI Pose',
                           icon: Icons.auto_awesome_rounded,
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('AI Pose Overlay processing module placeholder.'),
-                              ),
-                            );
-                          },
+                          onPressed: () => context.pushNamed(RouteNames.pose),
                         ),
                       ),
                     ],
@@ -112,19 +106,16 @@ class CapturedPreviewScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      // Edit Photo (Placeholder)
+                      // Edit Photo Button
                       Expanded(
                         child: CustomButton(
                           text: 'Edit Photo',
                           variant: ButtonVariant.secondary,
                           icon: Icons.auto_fix_high_rounded,
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('AI Photo Editor studio placeholder.'),
-                              ),
-                            );
-                          },
+                          onPressed: () => context.pushNamed(
+                            RouteNames.editor,
+                            extra: capturedFile,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -138,7 +129,7 @@ class CapturedPreviewScreen extends StatelessWidget {
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Photo saved to local gallery successfully! 🎉'),
+                                content: Text('Photo saved to gallery successfully! 🎉'),
                               ),
                             );
                           },

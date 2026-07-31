@@ -8,7 +8,7 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/camera/presentation/screens/captured_preview_screen.dart';
 import '../../features/pose/presentation/screens/pose_screen.dart';
-import '../../features/editor/presentation/screens/editor_screen_placeholder.dart';
+import '../../features/editor/presentation/screens/photo_editor_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen_placeholder.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
@@ -58,7 +58,10 @@ class AppRouter {
       GoRoute(
         name: RouteNames.editor,
         path: RouteNames.editorPath,
-        builder: (context, state) => const EditorScreenPlaceholder(),
+        builder: (context, state) {
+          final file = state.extra is XFile ? state.extra as XFile : null;
+          return PhotoEditorScreen(imageFile: file);
+        },
       ),
       GoRoute(
         name: RouteNames.profile,
@@ -71,10 +74,5 @@ class AppRouter {
         builder: (context, state) => const SettingsScreen(),
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Route Error: ${state.error}'),
-      ),
-    ),
   );
 }
