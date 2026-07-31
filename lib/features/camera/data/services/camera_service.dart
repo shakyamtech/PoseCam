@@ -56,6 +56,23 @@ class CameraServiceImpl implements CameraService {
         print('⚠️ [CameraService] Error fetching available cameras: $e');
       }
     }
+
+    if (kIsWeb) {
+      try {
+        await Future.delayed(const Duration(milliseconds: 500));
+        final retryCameras = await availableCameras();
+        if (retryCameras.isNotEmpty) return retryCameras;
+      } catch (_) {}
+
+      return const [
+        CameraDescription(
+          name: 'WebCam',
+          lensDirection: CameraLensDirection.front,
+          sensorOrientation: 0,
+        ),
+      ];
+    }
+
     return [];
   }
 
