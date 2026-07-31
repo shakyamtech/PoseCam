@@ -1,0 +1,56 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ project files
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code files
+.vscode/
+
+# Flutter/Dart specific
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android specific
+android/app/debug
+android/app/profile
+android/app/release
+android/key.properties
+android/local.properties
+android/.gradle
+android/captures/
+android/gradlew
+android/gradlew.bat
+
+# iOS specific
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.fltpackage
+ios/Pods/
+ios/Runner.xcworkspace
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+
+# Firebase / Secrets
+google-services.json
+GoogleService-Info.plist
