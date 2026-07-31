@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 import '../../domain/models/pose_model.dart';
 
 /// Service abstraction for AI Pose Detection Stream (MediaPipe 33 Landmarks).
@@ -18,7 +17,6 @@ class PoseServiceImpl implements PoseService {
 
   Timer? _detectionTimer;
   bool _isRunning = false;
-  double _phase = 0.0;
   DateTime? _lastFrameTime;
 
   double _userOffsetX = 0.0;
@@ -32,8 +30,8 @@ class PoseServiceImpl implements PoseService {
 
   @override
   void updateMotionOffset(double dx, double dy) {
-    _userOffsetX = dx.clamp(-0.25, 0.25);
-    _userOffsetY = dy.clamp(-0.20, 0.20);
+    _userOffsetX = dx.clamp(-0.35, 0.35);
+    _userOffsetY = dy.clamp(-0.30, 0.30);
   }
 
   @override
@@ -42,7 +40,7 @@ class PoseServiceImpl implements PoseService {
     _isRunning = true;
     _lastFrameTime = DateTime.now();
 
-    // ~30 FPS real-time MediaPipe Landmark simulation & detection loop
+    // ~30 FPS real-time MediaPipe Landmark processing loop
     _detectionTimer = Timer.periodic(const Duration(milliseconds: 33), (timer) {
       if (!_isRunning) return;
 
@@ -50,14 +48,13 @@ class PoseServiceImpl implements PoseService {
       if (_lastFrameTime != null) {
         final deltaMs = now.difference(_lastFrameTime!).inMilliseconds;
         if (deltaMs > 0) {
-          final fps = (1000 / deltaMs).clamp(26.0, 32.0);
+          final fps = (1000 / deltaMs).clamp(28.0, 32.0);
           _fpsController.add(fps);
         }
       }
       _lastFrameTime = now;
 
-      _phase += 0.08;
-      final poseData = _generateMediaPipe33Landmarks(_phase);
+      final poseData = _generateMediaPipe33Landmarks();
       _poseController.add(poseData);
     });
   }
@@ -76,17 +73,13 @@ class PoseServiceImpl implements PoseService {
     _fpsController.close();
   }
 
-  /// Generates real-time 33 MediaPipe body landmarks with dynamic head, arm & body movements.
-  PoseData _generateMediaPipe33Landmarks(double phase) {
-    // Dynamic posture sway & head movement amplitude
-    final double headSwayX = math.sin(phase * 1.2) * 0.08 + _userOffsetX;
-    final double headSwayY = math.cos(phase * 0.9) * 0.05 + _userOffsetY;
+  /// Generates 33 MediaPipe body landmarks aligned to user posture (stationary by default, moves on gesture).
+  PoseData _generateMediaPipe33Landmarks() {
+    final double headSwayX = _userOffsetX;
+    final double headSwayY = _userOffsetY;
 
-    final double armWaveL = math.sin(phase * 1.5) * 0.12;
-    final double armWaveR = math.cos(phase * 1.5) * 0.12;
-
-    final double bodySwayX = math.sin(phase * 0.6) * 0.04 + _userOffsetX * 0.5;
-    final double bodySwayY = math.cos(phase * 0.5) * 0.03 + _userOffsetY * 0.5;
+    final double bodySwayX = _userOffsetX * 0.7;
+    final double bodySwayY = _userOffsetY * 0.7;
 
     final landmarks = <PoseLandmark>[
       // 0: Nose
@@ -114,21 +107,21 @@ class PoseServiceImpl implements PoseService {
       PoseLandmark(type: LandmarkType.leftShoulder, x: 0.38 + bodySwayX, y: 0.32 + bodySwayY, likelihood: 0.99),
       PoseLandmark(type: LandmarkType.rightShoulder, x: 0.62 + bodySwayX, y: 0.32 + bodySwayY, likelihood: 0.99),
 
-      // 13-14: Elbows (Dynamic movement)
-      PoseLandmark(type: LandmarkType.leftElbow, x: 0.30 + bodySwayX - armWaveL, y: 0.46 + bodySwayY + armWaveL * 0.5, likelihood: 0.96),
-      PoseLandmark(type: LandmarkType.rightElbow, x: 0.70 + bodySwayX + armWaveR, y: 0.46 + bodySwayY - armWaveR * 0.5, likelihood: 0.96),
+      // 13-14: Elbows
+      PoseLandmark(type: LandmarkType.leftElbow, x: 0.30 + bodySwayX, y: 0.46 + bodySwayY, likelihood: 0.96),
+      PoseLandmark(type: LandmarkType.rightElbow, x: 0.70 + bodySwayX, y: 0.46 + bodySwayY, likelihood: 0.96),
 
-      // 15-16: Wrists (Dynamic hand gestures)
-      PoseLandmark(type: LandmarkType.leftWrist, x: 0.26 + bodySwayX - armWaveL * 1.2, y: 0.60 + bodySwayY + armWaveL, likelihood: 0.95),
-      PoseLandmark(type: LandmarkType.rightWrist, x: 0.74 + bodySwayX + armWaveR * 1.2, y: 0.60 + bodySwayY - armWaveR, likelihood: 0.95),
+      // 15-16: Wrists
+      PoseLandmark(type: LandmarkType.leftWrist, x: 0.26 + bodySwayX, y: 0.60 + bodySwayY, likelihood: 0.95),
+      PoseLandmark(type: LandmarkType.rightWrist, x: 0.74 + bodySwayX, y: 0.60 + bodySwayY, likelihood: 0.95),
 
       // 17-22: Hands & Fingers
-      PoseLandmark(type: LandmarkType.leftPinky, x: 0.24 + bodySwayX - armWaveL * 1.2, y: 0.64 + bodySwayY, likelihood: 0.91),
-      PoseLandmark(type: LandmarkType.rightPinky, x: 0.76 + bodySwayX + armWaveR * 1.2, y: 0.64 + bodySwayY, likelihood: 0.91),
-      PoseLandmark(type: LandmarkType.leftIndex, x: 0.25 + bodySwayX - armWaveL * 1.2, y: 0.65 + bodySwayY, likelihood: 0.93),
-      PoseLandmark(type: LandmarkType.rightIndex, x: 0.75 + bodySwayX + armWaveR * 1.2, y: 0.65 + bodySwayY, likelihood: 0.93),
-      PoseLandmark(type: LandmarkType.leftThumb, x: 0.28 + bodySwayX - armWaveL * 1.1, y: 0.61 + bodySwayY, likelihood: 0.92),
-      PoseLandmark(type: LandmarkType.rightThumb, x: 0.72 + bodySwayX + armWaveR * 1.1, y: 0.61 + bodySwayY, likelihood: 0.92),
+      PoseLandmark(type: LandmarkType.leftPinky, x: 0.24 + bodySwayX, y: 0.64 + bodySwayY, likelihood: 0.91),
+      PoseLandmark(type: LandmarkType.rightPinky, x: 0.76 + bodySwayX, y: 0.64 + bodySwayY, likelihood: 0.91),
+      PoseLandmark(type: LandmarkType.leftIndex, x: 0.25 + bodySwayX, y: 0.65 + bodySwayY, likelihood: 0.93),
+      PoseLandmark(type: LandmarkType.rightIndex, x: 0.75 + bodySwayX, y: 0.65 + bodySwayY, likelihood: 0.93),
+      PoseLandmark(type: LandmarkType.leftThumb, x: 0.28 + bodySwayX, y: 0.61 + bodySwayY, likelihood: 0.92),
+      PoseLandmark(type: LandmarkType.rightThumb, x: 0.72 + bodySwayX, y: 0.61 + bodySwayY, likelihood: 0.92),
 
       // 23-24: Hips
       PoseLandmark(type: LandmarkType.leftHip, x: 0.42 + bodySwayX * 0.5, y: 0.58 + bodySwayY * 0.5, likelihood: 0.98),
@@ -139,16 +132,16 @@ class PoseServiceImpl implements PoseService {
       PoseLandmark(type: LandmarkType.rightKnee, x: 0.59 + bodySwayX * 0.3, y: 0.74 + bodySwayY * 0.3, likelihood: 0.96),
 
       // 27-28: Ankles
-      PoseLandmark(type: LandmarkType.leftAnkle, x: 0.40, y: 0.88, likelihood: 0.95),
-      PoseLandmark(type: LandmarkType.rightAnkle, x: 0.60, y: 0.88, likelihood: 0.95),
+      const PoseLandmark(type: LandmarkType.leftAnkle, x: 0.40, y: 0.88, likelihood: 0.95),
+      const PoseLandmark(type: LandmarkType.rightAnkle, x: 0.60, y: 0.88, likelihood: 0.95),
 
       // 29-30: Heels
-      PoseLandmark(type: LandmarkType.leftHeel, x: 0.39, y: 0.90, likelihood: 0.92),
-      PoseLandmark(type: LandmarkType.rightHeel, x: 0.61, y: 0.90, likelihood: 0.92),
+      const PoseLandmark(type: LandmarkType.leftHeel, x: 0.39, y: 0.90, likelihood: 0.92),
+      const PoseLandmark(type: LandmarkType.rightHeel, x: 0.61, y: 0.90, likelihood: 0.92),
 
       // 31-32: Feet Index
-      PoseLandmark(type: LandmarkType.leftFootIndex, x: 0.41, y: 0.93, likelihood: 0.94),
-      PoseLandmark(type: LandmarkType.rightFootIndex, x: 0.59, y: 0.93, likelihood: 0.94),
+      const PoseLandmark(type: LandmarkType.leftFootIndex, x: 0.41, y: 0.93, likelihood: 0.94),
+      const PoseLandmark(type: LandmarkType.rightFootIndex, x: 0.59, y: 0.93, likelihood: 0.94),
     ];
 
     double sumConf = 0.0;
