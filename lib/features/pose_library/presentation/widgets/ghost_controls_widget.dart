@@ -123,12 +123,12 @@ class _GhostControlsWidgetState extends ConsumerState<GhostControlsWidget> {
 
                   // Opacity Slider (0.1 - 1.0)
                   SliderTheme(
-                    data: SliderThemeData(
+                    data: const SliderThemeData(
                       thumbColor: AppColors.primary,
                       activeTrackColor: AppColors.primary,
                       inactiveTrackColor: Colors.white24,
                       trackHeight: 3,
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
                     ),
                     child: Slider(
                       value: ghostState.opacity,
