@@ -7,7 +7,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/routes/route_names.dart';
 import '../../../../providers/camera_provider.dart';
 
-/// Glassmorphic Google Pixel style Top Bar for Camera Controls.
+/// Glassmorphic Google Pixel style Top Bar for Camera Controls with Back button.
 class CameraTopBar extends ConsumerWidget {
   const CameraTopBar({super.key});
 
@@ -46,7 +46,7 @@ class CameraTopBar extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black.withOpacity(0.7),
+            Colors.black.withValues(alpha: 0.75),
             Colors.transparent,
           ],
           begin: Alignment.topCenter,
@@ -58,6 +58,23 @@ class CameraTopBar extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Back to Home Button
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+              onPressed: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.goNamed(RouteNames.home);
+                }
+              },
+              tooltip: 'Back to Home',
+            ),
+
             // Flash Toggle Button
             IconButton(
               icon: Icon(
@@ -84,10 +101,10 @@ class CameraTopBar extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.45),
+                color: Colors.black.withValues(alpha: 0.45),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.6),
+                  color: AppColors.primary.withValues(alpha: 0.6),
                   width: 1,
                 ),
               ),
