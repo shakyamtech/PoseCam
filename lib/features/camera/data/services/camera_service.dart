@@ -48,13 +48,14 @@ class CameraServiceImpl implements CameraService {
   @override
   Future<List<CameraDescription>> getAvailableCameras() async {
     try {
-      return await availableCameras();
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) return cameras;
     } catch (e) {
       if (kDebugMode) {
         print('⚠️ [CameraService] Error fetching available cameras: $e');
       }
-      return [];
     }
+    return [];
   }
 
   @override
@@ -65,7 +66,7 @@ class CameraServiceImpl implements CameraService {
       camera,
       ResolutionPreset.high,
       enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg,
+      imageFormatGroup: kIsWeb ? null : ImageFormatGroup.jpeg,
     );
 
     await _controller!.initialize();
@@ -73,30 +74,38 @@ class CameraServiceImpl implements CameraService {
 
   @override
   Future<void> setFlashMode(FlashMode mode) async {
-    if (_controller != null && _controller!.value.isInitialized) {
-      await _controller!.setFlashMode(mode);
+    if (_controller != null && _controller!.value.isInitialized && !kIsWeb) {
+      try {
+        await _controller!.setFlashMode(mode);
+      } catch (_) {}
     }
   }
 
   @override
   Future<void> setZoomLevel(double zoom) async {
     if (_controller != null && _controller!.value.isInitialized) {
-      await _controller!.setZoomLevel(zoom);
+      try {
+        await _controller!.setZoomLevel(zoom);
+      } catch (_) {}
     }
   }
 
   @override
   Future<void> setExposureOffset(double offset) async {
-    if (_controller != null && _controller!.value.isInitialized) {
-      await _controller!.setExposureOffset(offset);
+    if (_controller != null && _controller!.value.isInitialized && !kIsWeb) {
+      try {
+        await _controller!.setExposureOffset(offset);
+      } catch (_) {}
     }
   }
 
   @override
   Future<void> setFocusPoint(Offset point) async {
-    if (_controller != null && _controller!.value.isInitialized) {
-      await _controller!.setFocusMode(FocusMode.auto);
-      await _controller!.setFocusPoint(point);
+    if (_controller != null && _controller!.value.isInitialized && !kIsWeb) {
+      try {
+        await _controller!.setFocusMode(FocusMode.auto);
+        await _controller!.setFocusPoint(point);
+      } catch (_) {}
     }
   }
 
@@ -114,7 +123,9 @@ class CameraServiceImpl implements CameraService {
   @override
   Future<void> dispose() async {
     if (_controller != null) {
-      await _controller!.dispose();
+      try {
+        await _controller!.dispose();
+      } catch (_) {}
       _controller = null;
     }
   }
