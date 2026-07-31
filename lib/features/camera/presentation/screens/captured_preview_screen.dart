@@ -2,14 +2,16 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/routes/route_names.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../providers/gallery_provider.dart';
 
 /// Screen displaying the captured image with actions: Retake, AI Pose overlay, Edit Photo, and Save.
-class CapturedPreviewScreen extends StatelessWidget {
+class CapturedPreviewScreen extends ConsumerWidget {
   final XFile? capturedFile;
 
   const CapturedPreviewScreen({
@@ -18,7 +20,7 @@ class CapturedPreviewScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -120,18 +122,22 @@ class CapturedPreviewScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
 
-                      // Save Photo
+                      // Save Photo to Gallery
                       Expanded(
                         child: CustomButton(
                           text: 'Save Photo',
                           variant: ButtonVariant.primary,
                           icon: Icons.download_rounded,
                           onPressed: () {
+                            if (capturedFile != null) {
+                              ref.read(galleryProvider.notifier).addPhoto(capturedFile!.path);
+                            }
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Photo saved to gallery successfully! 🎉'),
                               ),
                             );
+                            context.pushNamed(RouteNames.profile);
                           },
                         ),
                       ),

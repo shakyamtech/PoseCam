@@ -9,7 +9,7 @@ import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/camera/presentation/screens/captured_preview_screen.dart';
 import '../../features/pose/presentation/screens/pose_screen.dart';
 import '../../features/editor/presentation/screens/photo_editor_screen.dart';
-import '../../features/profile/presentation/screens/profile_screen_placeholder.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 /// App GoRouter navigation configuration.
@@ -66,7 +66,7 @@ class AppRouter {
       GoRoute(
         name: RouteNames.profile,
         path: RouteNames.profilePath,
-        builder: (context, state) => const ProfileScreenPlaceholder(),
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         name: RouteNames.settings,
