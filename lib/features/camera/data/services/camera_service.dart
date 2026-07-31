@@ -10,7 +10,7 @@ abstract class CameraService {
   Future<CameraPermissionState> checkAndRequestPermission();
   Future<List<CameraDescription>> getAvailableCameras();
   CameraController? get controller;
-  Future<void> initializeCamera(CameraDescription camera);
+  Future<void> initializeCamera(CameraDescription camera, {ResolutionPreset? preset});
   Future<void> setFlashMode(FlashMode mode);
   Future<void> setZoomLevel(double zoom);
   Future<void> setExposureOffset(double offset);
@@ -49,22 +49,34 @@ class CameraServiceImpl implements CameraService {
   @override
   Future<List<CameraDescription>> getAvailableCameras() async {
     try {
-      return await availableCameras();
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) return cameras;
     } catch (e) {
       if (kDebugMode) {
         print('⚠️ [CameraService] Error fetching available cameras: $e');
       }
-      return [];
     }
+
+    if (kIsWeb) {
+      try {
+        await Future.delayed(const Duration(milliseconds: 400));
+        final retryCameras = await availableCameras();
+        if (retryCameras.isNotEmpty) return retryCameras;
+      } catch (_) {}
+    }
+
+    return [];
   }
 
   @override
-  Future<void> initializeCamera(CameraDescription camera) async {
+  Future<void> initializeCamera(CameraDescription camera, {ResolutionPreset? preset}) async {
     await dispose();
+
+    final resolution = preset ?? (kIsWeb ? ResolutionPreset.medium : ResolutionPreset.high);
 
     _controller = CameraController(
       camera,
-      ResolutionPreset.high,
+      resolution,
       enableAudio: false,
       imageFormatGroup: kIsWeb ? null : ImageFormatGroup.jpeg,
     );

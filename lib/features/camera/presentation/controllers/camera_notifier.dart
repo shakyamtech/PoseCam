@@ -49,7 +49,7 @@ class CameraNotifier extends StateNotifier<CameraState> {
 
   Future<void> _setupCamera(CameraDescription camera) async {
     try {
-      await _cameraService.initializeCamera(camera);
+      await _cameraService.initializeCamera(camera, preset: ResolutionPreset.medium);
       final controller = _cameraService.controller;
 
       if (controller != null && controller.value.isInitialized) {
@@ -75,12 +75,29 @@ class CameraNotifier extends StateNotifier<CameraState> {
           exposureOffset: 0.0,
           errorMessage: null,
         );
+        return;
       }
     } catch (e) {
-      state = state.copyWith(
-        isInitialized: false,
-        errorMessage: 'Unable to start camera preview stream: $e',
-      );
+      if (kDebugMode) {
+        print('⚠️ First camera setup attempt: $e. Retrying with ResolutionPreset.low...');
+      }
+      try {
+        await _cameraService.initializeCamera(camera, preset: ResolutionPreset.low);
+        final controller = _cameraService.controller;
+
+        if (controller != null && controller.value.isInitialized) {
+          state = state.copyWith(
+            isInitialized: true,
+            errorMessage: null,
+          );
+          return;
+        }
+      } catch (err) {
+        state = state.copyWith(
+          isInitialized: false,
+          errorMessage: 'Unable to start camera preview stream: $err',
+        );
+      }
     }
   }
 
