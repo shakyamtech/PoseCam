@@ -25,8 +25,8 @@ class AppTheme {
         ),
       ),
 
-      // Card Theme
-      cardTheme: CardTheme(
+      // Card Theme Data
+      cardTheme: CardThemeData(
         color: AppColors.darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -67,8 +67,8 @@ class AppTheme {
         backgroundColor: AppColors.darkSurface,
         indicatorColor: AppColors.primary.withOpacity(0.2),
         elevation: 8,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppTypography.labelSmall.copyWith(
               color: AppColors.primary,
               fontWeight: FontWeight.w700,
@@ -78,8 +78,8 @@ class AppTheme {
             color: AppColors.darkTextMuted,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.primary);
           }
           return const IconThemeData(color: AppColors.darkTextMuted);
@@ -127,8 +127,8 @@ class AppTheme {
         ),
       ),
 
-      // Card Theme
-      cardTheme: CardTheme(
+      // Card Theme Data
+      cardTheme: CardThemeData(
         color: AppColors.lightCard,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.05),
@@ -170,8 +170,8 @@ class AppTheme {
         backgroundColor: AppColors.lightSurface,
         indicatorColor: AppColors.primary.withOpacity(0.15),
         elevation: 8,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppTypography.labelSmall.copyWith(
               color: AppColors.primary,
               fontWeight: FontWeight.w700,
@@ -181,8 +181,8 @@ class AppTheme {
             color: AppColors.lightTextMuted,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.primary);
           }
           return const IconThemeData(color: AppColors.lightTextMuted);
