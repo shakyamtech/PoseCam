@@ -55,23 +55,15 @@ class PoseNotifier extends StateNotifier<PoseDetectionState> {
       }
     });
 
-    _fpsSubscription = _fpsService.fpsStream.listen((fps) {
+    _fpsSubscription = _poseService.fpsStream.listen((fps) {
       if (state.isDetectionActive) {
         state = state.copyWith(currentFps: fps);
       }
     });
   }
 
-  PoseService get _fpsService => _poseService;
-
-  void toggleDetection() {
-    final nextActive = !state.isDetectionActive;
-    if (nextActive) {
-      _poseService.startDetection();
-    } else {
-      _poseService.stopDetection();
-    }
-    state = state.copyWith(isDetectionActive: nextActive);
+  void updateMotionOffset(double dx, double dy) {
+    _poseService.updateMotionOffset(dx, dy);
   }
 
   void toggleSkeletonMesh() {
@@ -80,6 +72,10 @@ class PoseNotifier extends StateNotifier<PoseDetectionState> {
 
   void toggleLandmarkLabels() {
     state = state.copyWith(showLandmarkLabels: !state.showLandmarkLabels);
+  }
+
+  void toggleDetection(bool active) {
+    state = state.copyWith(isDetectionActive: active);
   }
 
   @override
