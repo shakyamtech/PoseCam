@@ -18,6 +18,12 @@ abstract class RouteNames {
   static const String pose = 'pose';
   static const String posePath = '/pose';
 
+  static const String poseLibrary = 'poseLibrary';
+  static const String poseLibraryPath = '/pose-library';
+
+  static const String posePreview = 'posePreview';
+  static const String posePreviewPath = '/pose-preview';
+
   static const String editor = 'editor';
   static const String editorPath = '/editor';
 

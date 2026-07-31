@@ -8,6 +8,9 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/camera/presentation/screens/captured_preview_screen.dart';
 import '../../features/pose/presentation/screens/pose_screen.dart';
+import '../../features/pose_library/domain/models/pose_item_model.dart';
+import '../../features/pose_library/presentation/screens/pose_library_screen.dart';
+import '../../features/pose_library/presentation/screens/pose_preview_screen.dart';
 import '../../features/editor/presentation/screens/photo_editor_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -54,6 +57,19 @@ class AppRouter {
         name: RouteNames.pose,
         path: RouteNames.posePath,
         builder: (context, state) => const PoseScreen(),
+      ),
+      GoRoute(
+        name: RouteNames.poseLibrary,
+        path: RouteNames.poseLibraryPath,
+        builder: (context, state) => const PoseLibraryScreen(),
+      ),
+      GoRoute(
+        name: RouteNames.posePreview,
+        path: RouteNames.posePreviewPath,
+        builder: (context, state) {
+          final pose = state.extra as PoseItemModel;
+          return PosePreviewScreen(pose: pose);
+        },
       ),
       GoRoute(
         name: RouteNames.editor,
