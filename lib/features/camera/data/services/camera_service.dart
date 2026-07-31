@@ -49,31 +49,13 @@ class CameraServiceImpl implements CameraService {
   @override
   Future<List<CameraDescription>> getAvailableCameras() async {
     try {
-      final cameras = await availableCameras();
-      if (cameras.isNotEmpty) return cameras;
+      return await availableCameras();
     } catch (e) {
       if (kDebugMode) {
         print('⚠️ [CameraService] Error fetching available cameras: $e');
       }
+      return [];
     }
-
-    if (kIsWeb) {
-      try {
-        await Future.delayed(const Duration(milliseconds: 500));
-        final retryCameras = await availableCameras();
-        if (retryCameras.isNotEmpty) return retryCameras;
-      } catch (_) {}
-
-      return const [
-        CameraDescription(
-          name: 'WebCam',
-          lensDirection: CameraLensDirection.front,
-          sensorOrientation: 0,
-        ),
-      ];
-    }
-
-    return [];
   }
 
   @override

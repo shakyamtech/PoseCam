@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/camera_service.dart';
@@ -24,7 +25,12 @@ class CameraNotifier extends StateNotifier<CameraState> {
       return;
     }
 
-    final cameras = await _cameraService.getAvailableCameras();
+    var cameras = await _cameraService.getAvailableCameras();
+    if (cameras.isEmpty && kIsWeb) {
+      await Future.delayed(const Duration(milliseconds: 600));
+      cameras = await _cameraService.getAvailableCameras();
+    }
+
     if (cameras.isEmpty) {
       state = state.copyWith(
         isInitialized: false,
@@ -47,10 +53,17 @@ class CameraNotifier extends StateNotifier<CameraState> {
       final controller = _cameraService.controller;
 
       if (controller != null && controller.value.isInitialized) {
-        final minZoom = await controller.getMinZoomLevel();
-        final maxZoom = await controller.getMaxZoomLevel();
-        final minExp = await controller.getMinExposureOffset();
-        final maxExp = await controller.getMaxExposureOffset();
+        double minZoom = 1.0;
+        double maxZoom = 5.0;
+        double minExp = -2.0;
+        double maxExp = 2.0;
+
+        try {
+          minZoom = await controller.getMinZoomLevel();
+          maxZoom = await controller.getMaxZoomLevel();
+          minExp = await controller.getMinExposureOffset();
+          maxExp = await controller.getMaxExposureOffset();
+        } catch (_) {}
 
         state = state.copyWith(
           isInitialized: true,
@@ -66,7 +79,7 @@ class CameraNotifier extends StateNotifier<CameraState> {
     } catch (e) {
       state = state.copyWith(
         isInitialized: false,
-        errorMessage: 'Failed to initialize camera preview: $e',
+        errorMessage: 'Unable to start camera preview stream: $e',
       );
     }
   }
@@ -103,14 +116,19 @@ class CameraNotifier extends StateNotifier<CameraState> {
   }
 
   Future<void> switchCamera() async {
-    if (state.availableCameras.length < 2) return;
+    final cameras = await _cameraService.getAvailableCameras();
+    if (cameras.isEmpty) {
+      initCamera();
+      return;
+    }
 
-    final nextIndex = (state.selectedCameraIndex + 1) % state.availableCameras.length;
+    final nextIndex = (state.selectedCameraIndex + 1) % cameras.length;
     state = state.copyWith(
+      availableCameras: cameras,
       selectedCameraIndex: nextIndex,
       isInitialized: false,
     );
-    await _setupCamera(state.availableCameras[nextIndex]);
+    await _setupCamera(cameras[nextIndex]);
   }
 
   Future<void> setZoomLevel(double zoom) async {
@@ -130,7 +148,6 @@ class CameraNotifier extends StateNotifier<CameraState> {
   Future<void> onTapFocus(Offset tapPosition, Size screenSize) async {
     if (!state.isInitialized) return;
 
-    // Normalize tap point to (0..1)
     final normalizedX = tapPosition.dx / screenSize.width;
     final normalizedY = tapPosition.dy / screenSize.height;
 
