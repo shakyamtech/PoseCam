@@ -52,7 +52,7 @@ class CapturedPreviewScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.darkBorder, width: 1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -73,7 +73,7 @@ class CapturedPreviewScreen extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 16,
                     offset: const Offset(0, -4),
                   ),
@@ -118,7 +118,13 @@ class CapturedPreviewScreen extends StatelessWidget {
                           text: 'Edit Photo',
                           variant: ButtonVariant.secondary,
                           icon: Icons.auto_fix_high_rounded,
-                          onPressed: () => context.pushNamed(RouteNames.editor),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('AI Photo Editor studio placeholder.'),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -127,14 +133,14 @@ class CapturedPreviewScreen extends StatelessWidget {
                       Expanded(
                         child: CustomButton(
                           text: 'Save Photo',
-                          icon: Icons.save_alt_rounded,
+                          variant: ButtonVariant.primary,
+                          icon: Icons.download_rounded,
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Photo saved successfully to PoseSnap Gallery!'),
+                                content: Text('Photo saved to local gallery successfully! 🎉'),
                               ),
                             );
-                            context.goNamed(RouteNames.home);
                           },
                         ),
                       ),
@@ -151,16 +157,28 @@ class CapturedPreviewScreen extends StatelessWidget {
 
   Widget _buildImageWidget() {
     if (capturedFile != null) {
+      final path = capturedFile!.path;
       if (kIsWeb) {
+        if (path.startsWith('data:image')) {
+          final base64Bytes = Uri.parse(path).data?.contentAsBytes();
+          if (base64Bytes != null) {
+            return Image.memory(
+              base64Bytes,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            );
+          }
+        }
         return Image.network(
-          capturedFile!.path,
+          path,
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
         );
       }
       return Image.file(
-        File(capturedFile!.path),
+        File(path),
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
@@ -172,8 +190,8 @@ class CapturedPreviewScreen extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withOpacity(0.6),
-            AppColors.secondary.withOpacity(0.3),
+            AppColors.primary.withValues(alpha: 0.6),
+            AppColors.secondary.withValues(alpha: 0.3),
             AppColors.darkSurfaceVariant,
           ],
           begin: Alignment.topLeft,

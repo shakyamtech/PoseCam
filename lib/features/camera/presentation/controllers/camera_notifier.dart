@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/camera_service.dart';
 import '../../domain/models/camera_state.dart';
+import '../widgets/web_camera_view.dart';
 
 /// Riverpod StateNotifier managing the live camera state & user controls.
 class CameraNotifier extends StateNotifier<CameraState> {
@@ -149,9 +150,12 @@ class CameraNotifier extends StateNotifier<CameraState> {
   }
 
   Future<void> setZoomLevel(double zoom) async {
-    if (!state.isInitialized) return;
     final clampedZoom = zoom.clamp(state.minZoomLevel, state.maxZoomLevel);
-    await _cameraService.setZoomLevel(clampedZoom);
+    if (kIsWeb) {
+      setWebCameraZoom(clampedZoom);
+    } else if (state.isInitialized) {
+      await _cameraService.setZoomLevel(clampedZoom);
+    }
     state = state.copyWith(zoomLevel: clampedZoom);
   }
 
@@ -183,10 +187,10 @@ class CameraNotifier extends StateNotifier<CameraState> {
     state = state.copyWith(isCapturing: true);
     try {
       if (kIsWeb) {
-        // Capture photo snapshot for Web HTML5 stream
-        await Future.delayed(const Duration(milliseconds: 300));
+        final dataUrl = getWebCameraSnapshot();
+        await Future.delayed(const Duration(milliseconds: 150));
         final capturedWebFile = XFile(
-          'https://picsum.photos/800/1200',
+          dataUrl ?? 'https://picsum.photos/800/1200',
           name: 'web_capture_${DateTime.now().millisecondsSinceEpoch}.jpg',
         );
         state = state.copyWith(
