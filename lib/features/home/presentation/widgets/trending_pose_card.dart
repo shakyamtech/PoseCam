@@ -41,7 +41,7 @@ class TrendingPoseCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.25) : Colors.black.withOpacity(0.04),
+            color: isDark ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -66,8 +66,8 @@ class TrendingPoseCard extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
                       gradient: LinearGradient(
                         colors: [
-                          AppColors.primary.withOpacity(0.4),
-                          AppColors.secondary.withOpacity(0.2),
+                          AppColors.primary.withValues(alpha: 0.4),
+                          AppColors.secondary.withValues(alpha: 0.2),
                           AppColors.darkSurfaceVariant,
                         ],
                         begin: Alignment.topLeft,
@@ -81,7 +81,7 @@ class TrendingPoseCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white24, width: 1),
                             ),
@@ -111,9 +111,9 @@ class TrendingPoseCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.65),
+                        color: Colors.black.withValues(alpha: 0.65),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: diffColor.withOpacity(0.5), width: 1),
+                        border: Border.all(color: diffColor.withValues(alpha: 0.5), width: 1),
                       ),
                       child: Row(
                         children: [
@@ -146,7 +146,7 @@ class TrendingPoseCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.65),
+                        color: Colors.black.withValues(alpha: 0.65),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -168,18 +168,18 @@ class TrendingPoseCard extends StatelessWidget {
                 ],
               ),
 
-              // Details Padding
+              // Title, Guide Tip & Category Metadata
               Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       pose.title,
                       style: AppTypography.titleMedium.copyWith(
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                        color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -190,10 +190,41 @@ class TrendingPoseCard extends StatelessWidget {
                       style: AppTypography.bodyMedium.copyWith(
                         color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                         fontSize: 11.5,
-                        height: 1.3,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          pose.category,
+                          style: AppTypography.labelSmall.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star_rounded,
+                              size: 14,
+                              color: Colors.amber.shade600,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '4.9',
+                              style: AppTypography.labelSmall.copyWith(
+                                color: isDark ? Colors.white70 : AppColors.lightTextPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),

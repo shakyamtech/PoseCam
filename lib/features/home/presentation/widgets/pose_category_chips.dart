@@ -2,15 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
-import '../../../../providers/home_provider.dart';
 
-/// Horizontal scrolling chip filter selector for pose categories.
+final selectedCategoryProvider = StateProvider<String>((ref) => 'All');
+
+/// Horizontal scrolling Filter Chips for Pose Categories.
 class PoseCategoryChips extends ConsumerWidget {
   const PoseCategoryChips({super.key});
 
+  static const categories = [
+    'All',
+    'Solo Portrait',
+    'Couple',
+    'Streetwear',
+    'Fashion',
+    'Aesthetic',
+    'Fitness',
+    'Travel',
+  ];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categories = ref.watch(poseCategoryChipsProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -18,43 +29,29 @@ class PoseCategoryChips extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Pose Categories',
-                style: AppTypography.titleLarge.copyWith(
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  fontSize: 19,
-                ),
-              ),
-              Text(
-                '${categories.length - 1} Tags',
-                style: AppTypography.labelSmall.copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                ),
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Browse Categories',
+            style: AppTypography.titleMedium.copyWith(
+              color: isDark ? Colors.white : AppColors.lightTextPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 42,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          height: 44,
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             itemCount: categories.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final category = categories[index];
               final isSelected = category == selectedCategory;
 
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOutCubic,
-                child: ChoiceChip(
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilterChip(
                   label: Text(category),
                   selected: isSelected,
                   onSelected: (selected) {
@@ -86,7 +83,7 @@ class PoseCategoryChips extends ConsumerWidget {
                     ),
                   ),
                   elevation: isSelected ? 4 : 0,
-                  shadowColor: AppColors.primary.withOpacity(0.3),
+                  shadowColor: AppColors.primary.withValues(alpha: 0.3),
                 ),
               );
             },

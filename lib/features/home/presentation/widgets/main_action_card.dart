@@ -33,8 +33,8 @@ class MainActionCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
-        splashColor: iconBackgroundColor.withOpacity(0.2),
-        highlightColor: iconBackgroundColor.withOpacity(0.1),
+        splashColor: iconBackgroundColor.withValues(alpha: 0.2),
+        highlightColor: iconBackgroundColor.withValues(alpha: 0.1),
         child: Ink(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
@@ -42,15 +42,15 @@ class MainActionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: isFeatured
-                  ? AppColors.primary.withOpacity(0.5)
+                  ? AppColors.primary.withValues(alpha: 0.5)
                   : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
               width: isFeatured ? 1.5 : 1.0,
             ),
             boxShadow: [
               BoxShadow(
                 color: isFeatured
-                    ? AppColors.primary.withOpacity(0.18)
-                    : (isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.04)),
+                    ? AppColors.primary.withValues(alpha: 0.18)
+                    : (isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.04)),
                 blurRadius: isFeatured ? 20 : 12,
                 offset: const Offset(0, 6),
               ),
@@ -71,7 +71,7 @@ class MainActionCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: iconBackgroundColor.withOpacity(0.35),
+                          color: iconBackgroundColor.withValues(alpha: 0.35),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -88,17 +88,18 @@ class MainActionCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant,
+                      color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.arrow_forward_rounded,
                       size: 16,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      color: isDark ? Colors.white70 : AppColors.lightTextSecondary,
                     ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 16),
 
               // Title & Description
@@ -107,10 +108,9 @@ class MainActionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTypography.titleLarge.copyWith(
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -118,8 +118,7 @@ class MainActionCard extends StatelessWidget {
                     description,
                     style: AppTypography.bodyMedium.copyWith(
                       color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                      fontSize: 12.5,
-                      height: 1.3,
+                      fontSize: 12,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

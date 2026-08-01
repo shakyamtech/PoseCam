@@ -4,45 +4,48 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/routes/route_names.dart';
-import '../../../../providers/home_provider.dart';
+import '../../../../providers/gallery_provider.dart';
 
-/// Recent Photos horizontal list section.
+/// Recent Photos Horizontal Section for quick editor re-entry.
 class RecentPhotosSection extends ConsumerWidget {
   const RecentPhotosSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recentPhotos = ref.watch(recentPhotosProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final photos = ref.watch(galleryProvider);
+
+    if (photos.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.history_toggle_off_rounded, color: AppColors.secondary, size: 22),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Recent Captures',
-                    style: AppTypography.titleLarge.copyWith(
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      fontSize: 19,
-                    ),
-                  ),
-                ],
+              Text(
+                'Recent Captures',
+                style: AppTypography.titleMedium.copyWith(
+                  color: isDark ? Colors.white : AppColors.lightTextPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextButton(
                 onPressed: () => context.pushNamed(RouteNames.profile),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Text(
-                  'Gallery',
+                  'View All',
                   style: AppTypography.labelLarge.copyWith(
                     color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -52,16 +55,15 @@ class RecentPhotosSection extends ConsumerWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 140,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: recentPhotos.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            itemCount: photos.length,
             itemBuilder: (context, index) {
-              final photo = recentPhotos[index];
+              final photo = photos[index];
 
               return Container(
+                margin: const EdgeInsets.only(right: 12.0),
                 width: 110,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
@@ -71,7 +73,7 @@ class RecentPhotosSection extends ConsumerWidget {
                   ),
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.25),
+                      AppColors.primary.withValues(alpha: 0.25),
                       AppColors.darkSurfaceVariant,
                     ],
                     begin: Alignment.topCenter,
@@ -82,7 +84,7 @@ class RecentPhotosSection extends ConsumerWidget {
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(18),
                   child: InkWell(
-                    onTap: () => context.pushNamed(RouteNames.editor),
+                    onTap: () => context.pushNamed(RouteNames.profile),
                     borderRadius: BorderRadius.circular(18),
                     child: Stack(
                       children: [
@@ -94,7 +96,7 @@ class RecentPhotosSection extends ConsumerWidget {
                               Icon(
                                 Icons.image_rounded,
                                 size: 28,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -119,7 +121,7 @@ class RecentPhotosSection extends ConsumerWidget {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.65),
+                              color: Colors.black.withValues(alpha: 0.65),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -141,7 +143,7 @@ class RecentPhotosSection extends ConsumerWidget {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
